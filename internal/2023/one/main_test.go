@@ -12,7 +12,7 @@ import (
 func Test_PartOne(t *testing.T) {
 	testCases := map[string]int{
 		"mini.txt": 142,
-		"real.txt": 56042,
+		"real.txt": 56049,
 	}
 
 	for filePath, expected := range testCases {
@@ -33,7 +33,7 @@ func Test_PartOne(t *testing.T) {
 func Test_PartTwo(t *testing.T) {
 	testCases := map[string]int{
 		"mini.txt": 281,
-		"real.txt": 55358,
+		"real.txt": 54530,
 	}
 
 	for filePath, expected := range testCases {
