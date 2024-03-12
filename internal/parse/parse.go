@@ -3,7 +3,6 @@ package parse
 
 import (
 	"bufio"
-	// "errors"
 	"fmt"
 	"io/fs"
 )
