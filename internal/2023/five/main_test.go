@@ -32,7 +32,7 @@ func Test_PartOne(t *testing.T) {
 
 func Test_PartTwo(t *testing.T) {
 	testCases := map[string]int{
-		// "mini.txt": 46,
+		"mini.txt": 46,
 		"real.txt": 13114317,
 	}
 

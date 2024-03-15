@@ -1,60 +1,11 @@
 package five
 
 import (
-	"fmt"
 	"math"
 	"strings"
 
 	"github.com/jamesTait-jt/go-aoc/internal/parse"
 )
-
-type Almanac struct {
-	seedToSoil            []Mapping
-	soilToFertiliser      []Mapping
-	fertiliserToWater     []Mapping
-	waterToLight          []Mapping
-	lightToTemperature    []Mapping
-	temperatureToHumidity []Mapping
-	humidityToLocation    []Mapping
-}
-
-func (a Almanac) SeedToLocation(seed int) int {
-	soil := a.mapValue(a.seedToSoil, seed)
-	fertiliser := a.mapValue(a.soilToFertiliser, soil)
-	water := a.mapValue(a.fertiliserToWater, fertiliser)
-	light := a.mapValue(a.waterToLight, water)
-	temp := a.mapValue(a.lightToTemperature, light)
-	humidity := a.mapValue(a.temperatureToHumidity, temp)
-	location := a.mapValue(a.humidityToLocation, humidity)
-
-	return location
-}
-
-func (a Almanac) mapValue(mappings []Mapping, key int) int {
-	for _, mapping := range mappings {
-		if !mapping.Maps(key) {
-			continue
-		}
-
-		return mapping.Dest(key)
-	}
-
-	return key
-}
-
-type Mapping struct {
-	destRangeStart int
-	srcRangeStart  int
-	rangeLen       int
-}
-
-func (m Mapping) Maps(n int) bool {
-	return m.srcRangeStart <= n && n <= m.srcRangeStart+m.rangeLen
-}
-
-func (m Mapping) Dest(n int) int {
-	return m.destRangeStart + (n - m.srcRangeStart)
-}
 
 func PartOne(lines []string) int {
 	seeds := parse.Nums(strings.Split(lines[0], ": ")[1], " ")
@@ -75,36 +26,26 @@ func PartOne(lines []string) int {
 
 func PartTwo(lines []string) int {
 	seedInput := parse.Nums(strings.Split(lines[0], ": ")[1], " ")
-	seeds := []int{}
+	seedRanges := [][]int{}
 	i := 0
 	for i < len(seedInput)-1 {
-		initialSeed := seedInput[i]
-		numSeeds := seedInput[i+1]
-		for j := 0; j < numSeeds; j++ {
-			seeds = append(seeds, initialSeed+j)
-		}
+		seedRanges = append(seedRanges, []int{seedInput[i], seedInput[i+1]})
 
 		i += 2
 	}
 
-	fmt.Println(seeds)
+	almanac := parseAlmanac(lines[1:])
 
-	// almanac := parseAlmanac(lines[1:])
+	for i := 0; i < math.MaxInt32; i++ {
+		seed := almanac.LocationToSeed(i)
+		for _, seedRange := range seedRanges {
+			if seedRange[0] <= seed && seed < seedRange[0]+seedRange[1] {
+				return i
+			}
+		}
+	}
 
-	// fmt.Println("=== Parsed Almanac ===")
-
-	// lowestLocation := math.MaxUint32
-	// for _, seed := range seeds {
-	// 	location := almanac.SeedToLocation(seed)
-
-	// 	if location < lowestLocation {
-	// 		lowestLocation = location
-	// 	}
-	// }
-
-	// return lowestLocation
-
-	return 0 
+	return 0
 }
 
 func parseAlmanac(lines []string) Almanac {
@@ -169,4 +110,84 @@ func parseMappings(lines []string, startIdx int) []Mapping {
 	}
 
 	return mappings
+}
+
+type Almanac struct {
+	seedToSoil            []Mapping
+	soilToFertiliser      []Mapping
+	fertiliserToWater     []Mapping
+	waterToLight          []Mapping
+	lightToTemperature    []Mapping
+	temperatureToHumidity []Mapping
+	humidityToLocation    []Mapping
+}
+
+func (a Almanac) SeedToLocation(seed int) int {
+	soil := a.mapValue(a.seedToSoil, seed)
+	fertiliser := a.mapValue(a.soilToFertiliser, soil)
+	water := a.mapValue(a.fertiliserToWater, fertiliser)
+	light := a.mapValue(a.waterToLight, water)
+	temp := a.mapValue(a.lightToTemperature, light)
+	humidity := a.mapValue(a.temperatureToHumidity, temp)
+	location := a.mapValue(a.humidityToLocation, humidity)
+
+	return location
+}
+
+func (a Almanac) LocationToSeed(location int) int {
+	humidity := a.reverseMapValue(a.humidityToLocation, location)
+	temp := a.reverseMapValue(a.temperatureToHumidity, humidity)
+	light := a.reverseMapValue(a.lightToTemperature, temp)
+	water := a.reverseMapValue(a.waterToLight, light)
+	fertiliser := a.reverseMapValue(a.fertiliserToWater, water)
+	soil := a.reverseMapValue(a.soilToFertiliser, fertiliser)
+	seed := a.reverseMapValue(a.seedToSoil, soil)
+
+	return seed
+}
+
+func (a Almanac) mapValue(mappings []Mapping, key int) int {
+	for _, mapping := range mappings {
+		if !mapping.Maps(key) {
+			continue
+		}
+
+		return mapping.Dest(key)
+	}
+
+	return key
+}
+
+func (a Almanac) reverseMapValue(mappings []Mapping, dest int) int {
+	for _, mapping := range mappings {
+		if !mapping.MapsTo(dest) {
+			continue
+		}
+
+		return mapping.Src(dest)
+	}
+
+	return dest
+}
+
+type Mapping struct {
+	destRangeStart int
+	srcRangeStart  int
+	rangeLen       int
+}
+
+func (m Mapping) Maps(n int) bool {
+	return m.srcRangeStart <= n && n < m.srcRangeStart+m.rangeLen
+}
+
+func (m Mapping) MapsTo(n int) bool {
+	return m.destRangeStart <= n && n < m.destRangeStart+m.rangeLen
+}
+
+func (m Mapping) Dest(n int) int {
+	return m.destRangeStart + (n - m.srcRangeStart)
+}
+
+func (m Mapping) Src(n int) int {
+	return m.srcRangeStart + (n - m.destRangeStart)
 }
