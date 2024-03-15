@@ -1,13 +1,19 @@
 package six
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/jamesTait-jt/go-aoc/internal/parse"
 )
 
-func PartOne(lines []string) int {
+func Run(lines []string) {
+	fmt.Println("Part 1: ", partOne(lines))
+	fmt.Println("Part 2: ", partTwo(lines))
+}
+
+func partOne(lines []string) int {
 	times := parse.Nums(strings.Split(lines[0], ":")[1], " ")
 	dists := parse.Nums(strings.Split(lines[1], ":")[1], " ")
 
@@ -26,7 +32,7 @@ func PartOne(lines []string) int {
 	return mult
 }
 
-func PartTwo(lines []string) int {
+func partTwo(lines []string) int {
 	timeWithWhiteSpace := strings.Split(lines[0], ":")[1]
 	timeStr := strings.Join(strings.Fields(timeWithWhiteSpace), "")
 	time, _ := strconv.Atoi(timeStr)

@@ -1,11 +1,17 @@
 package three
 
 import (
+	"fmt"
 	"strconv"
 	"unicode"
 )
 
-func PartOne(lines []string) int {
+func Run(lines []string) {
+	fmt.Println("Part 1: ", partOne(lines))
+	fmt.Println("Part 2: ", partTwo(lines))
+}
+
+func partOne(lines []string) int {
 	sum := 0
 	for i := 0; i < len(lines); i++ {
 		for j := 0; j < len(lines[i]); j++ {
@@ -32,7 +38,7 @@ func PartOne(lines []string) int {
 	return sum
 }
 
-func PartTwo(lines []string) int {
+func partTwo(lines []string) int {
 	starsAndAdjacentNumbers := map[coord][]string{}
 	for i := 0; i < len(lines); i++ {
 		for j := 0; j < len(lines[i]); j++ {

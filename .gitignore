@@ -19,3 +19,9 @@
 
 # Go workspace file
 go.work
+
+# The secret session cookie
+.cookie
+
+# The downloaded aoc input
+**/.input/*

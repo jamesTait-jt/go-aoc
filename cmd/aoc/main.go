@@ -1,5 +1,0 @@
-package aoc
-
-func main() {
-	
-}

@@ -1,13 +1,19 @@
 package five
 
 import (
+	"fmt"
 	"math"
 	"strings"
 
 	"github.com/jamesTait-jt/go-aoc/internal/parse"
 )
 
-func PartOne(lines []string) int {
+func Run(lines []string) {
+	fmt.Println("Part 1: ", partOne(lines))
+	fmt.Println("Part 2: ", partTwo(lines))
+}
+
+func partOne(lines []string) int {
 	seeds := parse.Nums(strings.Split(lines[0], ": ")[1], " ")
 
 	almanac := parseAlmanac(lines[1:])
@@ -24,7 +30,7 @@ func PartOne(lines []string) int {
 	return lowestLocation
 }
 
-func PartTwo(lines []string) int {
+func partTwo(lines []string) int {
 	seedInput := parse.Nums(strings.Split(lines[0], ": ")[1], " ")
 	seedRanges := [][]int{}
 	i := 0

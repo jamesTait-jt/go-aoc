@@ -1,11 +1,17 @@
 package two
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
 
-func PartOne(lines []string) int {
+func Run(lines []string) {
+	fmt.Println("Part 1: ", partOne(lines))
+	fmt.Println("Part 2: ", partTwo(lines))
+}
+
+func partOne(lines []string) int {
 	sum := 0
 	for idx, game := range lines {
 		game = strings.Split(game, ": ")[1]
@@ -17,7 +23,7 @@ func PartOne(lines []string) int {
 	return sum
 }
 
-func PartTwo(lines []string) int {
+func partTwo(lines []string) int {
 	sum := 0
 	for _, game := range lines {
 		game = strings.Split(game, ": ")[1]

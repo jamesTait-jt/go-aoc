@@ -1,11 +1,17 @@
 package four
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
 
-func PartOne(lines []string) int {
+func Run(lines []string) {
+	fmt.Println("Part 1: ", partOne(lines))
+	fmt.Println("Part 2: ", partTwo(lines))
+}
+
+func partOne(lines []string) int {
 	total := 0
 	for _, line := range lines {
 		input := strings.Split(line, ": ")[1]
@@ -37,7 +43,7 @@ func PartOne(lines []string) int {
 	return total
 }
 
-func PartTwo(lines []string) int {
+func partTwo(lines []string) int {
 	scratchcards := map[int]int{}
 	for idx, line := range lines {
 		cardNumber := idx+1
