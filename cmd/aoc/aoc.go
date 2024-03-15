@@ -26,31 +26,10 @@ func main() {
 	}
 
 	if *day == -1 {
-		daysToRun := funcs[*year]
-
-		for dayIdx, runner := range daysToRun {
-			dayToRun := dayIdx + 1
-
-			input.Download(*year, dayToRun, false)
-
-			lines, err := input.Read(*year, dayToRun)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			fmt.Printf("~~~ Year=%d Day=%d\n", *year, dayToRun)
-			runner(lines)
-		}
+		runAllDays(*year, funcs[*year], false)
+	} else {
+		runSingleDay(*year, *day, false, funcs[*year][*day - 1])
 	}
-
-	// input.Download(*year, *day, false)
-
-	// input, err := input.Read(*year, *day)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// funcs[*year][*day](input)
 }
 
 func registerFuncs() map[int][]func([]string) {
@@ -64,4 +43,23 @@ func registerFuncs() map[int][]func([]string) {
 			six.Run,
 		},
 	}
+}
+
+func runAllDays(year int, daysToRun []func([]string), force bool) {
+	for dayIdx, runner := range daysToRun {
+		dayToRun := dayIdx + 1
+		runSingleDay(year, dayToRun, force, runner)
+	}
+}
+
+func runSingleDay(year int, day int, force bool, runner func([]string)) {
+	input.Download(year, day, force)
+
+	input, err := input.Read(year, day)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("~~~ Year=%d Day=%d\n", year, day)
+	runner(input)
 }
