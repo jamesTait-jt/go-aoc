@@ -36,6 +36,10 @@ func Nums(s string, delimiter string) []int {
 
 	ns := []int{}
 	for _, str := range strs {
+		if str == "" {
+			continue
+		}
+		
 		n, _ := strconv.Atoi(str)
 		ns = append(ns, n)
 	}

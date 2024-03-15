@@ -1,18 +1,18 @@
-package five_test
+package six_test
 
 import (
 	"os"
 	"testing"
 
-	"github.com/jamesTait-jt/go-aoc/internal/2023/five"
+	"github.com/jamesTait-jt/go-aoc/internal/2023/six"
 	"github.com/jamesTait-jt/go-aoc/internal/parse"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_PartOne(t *testing.T) {
 	testCases := map[string]int{
-		"mini.txt": 35,
-		"real.txt": 51752125,
+		"mini.txt": 288,
+		"real.txt": 505494,
 	}
 
 	for filePath, expected := range testCases {
@@ -23,7 +23,7 @@ func Test_PartOne(t *testing.T) {
 		}
 
 		// Act
-		solution := five.PartOne(input)
+		solution := six.PartOne(input)
 
 		// Assert
 		assert.Equal(t, expected, solution)
@@ -32,8 +32,8 @@ func Test_PartOne(t *testing.T) {
 
 func Test_PartTwo(t *testing.T) {
 	testCases := map[string]int{
-		"mini.txt": 46,
-		"real.txt": 12634632,
+		"mini.txt": 71503,
+		"real.txt": 23632299,
 	}
 
 	for filePath, expected := range testCases {
@@ -44,7 +44,7 @@ func Test_PartTwo(t *testing.T) {
 		}
 
 		// Act
-		solution := five.PartTwo(input)
+		solution := six.PartTwo(input)
 
 		// Assert
 		assert.Equal(t, expected, solution)
