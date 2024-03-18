@@ -3,16 +3,19 @@ package main
 import (
 	"fmt"
 	"log"
+	"plugin"
 
-	"github.com/jamesTait-jt/go-aoc/internal/2023/five"
-	"github.com/jamesTait-jt/go-aoc/internal/2023/four"
-	"github.com/jamesTait-jt/go-aoc/internal/2023/one"
-	"github.com/jamesTait-jt/go-aoc/internal/2023/six"
-	"github.com/jamesTait-jt/go-aoc/internal/2023/three"
-	"github.com/jamesTait-jt/go-aoc/internal/2023/two"
 	"github.com/jamesTait-jt/go-aoc/internal/config"
 	"github.com/jamesTait-jt/go-aoc/internal/input"
 )
+
+const pluginDir = "./internal/plugins"
+
+// aocDay represents a single day of AOC solutions. You must implement this interface for each day as a plugin.
+type aocDay interface {
+	PartOne([]string) string
+	PartTwo([]string) string
+}
 
 func main() {
 	appConfig, err := config.Init()
@@ -20,7 +23,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	runners := registerRunners()
+	runners, err := registerDays(appConfig)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if err = input.Download(appConfig); err != nil {
 		log.Fatal(err)
@@ -31,38 +37,45 @@ func main() {
 	}
 }
 
-func registerRunners() map[int]map[int]func([]string) {
-	return map[int]map[int]func([]string){
-		2023: {
-			1: one.Run,
-			2: two.Run,
-			3: three.Run,
-			4: four.Run,
-			5: five.Run,
-			6: six.Run,
-		},
+func registerDays(appConfig config.AppConfig) (map[int]map[int]aocDay, error) {
+	days := map[int]map[int]aocDay{appConfig.Year: {}}
+
+	for _, day := range appConfig.Days {
+		pluginPath := fmt.Sprintf("%s/%d/%d.so", pluginDir, appConfig.Year, day)
+		p, err := plugin.Open(pluginPath)
+		if err != nil {
+			return nil, err
+		}
+
+		symbolName := fmt.Sprintf("Day%d", day)
+		sym, err := p.Lookup(symbolName)
+		if err != nil {
+			return nil, err
+		}
+
+		runnableDay, ok := sym.(aocDay)
+		if !ok {
+			return nil, fmt.Errorf("aocDay not implemented correctly for year=%d day=%d", appConfig.Year, day)
+		}
+
+		days[appConfig.Year][day] = runnableDay
 	}
+
+	return days, nil
 }
 
-func run(appConfig config.AppConfig, runners map[int]map[int]func([]string)) error {
+func run(appConfig config.AppConfig, runnableDays map[int]map[int]aocDay) error {
 	for _, dayToRun := range appConfig.Days {
-		yearRunners, ok := runners[appConfig.Year]
-		if !ok {
-			return fmt.Errorf("no runners found for year=%d - please ensure you have registered the runner with the Run() function for the given day", appConfig.Year)
-		}
-
-		runner, ok := yearRunners[dayToRun]
-		if !ok {
-			return fmt.Errorf("no runner found for year=%d day=%d - please ensure you have registered the runner with the Run() function for the given day", appConfig.Year, dayToRun)
-		}
-
 		input, err := input.Read(appConfig.Year, dayToRun, appConfig.Input)
 		if err != nil {
 			return err
 		}
 
 		fmt.Printf("~~~ year=%d day=%d\n", appConfig.Year, dayToRun)
-		runner(input)
+
+		runner := runnableDays[appConfig.Year][dayToRun]
+		fmt.Println("Part 1: ", runner.PartOne(input))
+		fmt.Println("Part 2: ", runner.PartTwo(input))
 	}
 
 	return nil

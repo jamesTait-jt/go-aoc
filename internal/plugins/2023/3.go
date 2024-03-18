@@ -1,17 +1,15 @@
-package three
+package main
 
 import (
-	"fmt"
 	"strconv"
 	"unicode"
 )
 
-func Run(lines []string) {
-	fmt.Println("Part 1: ", partOne(lines))
-	fmt.Println("Part 2: ", partTwo(lines))
-}
+var Day3 day3
 
-func partOne(lines []string) int {
+type day3 struct{}
+
+func (d *day3) PartOne(lines []string) string {
 	sum := 0
 	for i := 0; i < len(lines); i++ {
 		for j := 0; j < len(lines[i]); j++ {
@@ -35,10 +33,10 @@ func partOne(lines []string) int {
 		}
 	}
 
-	return sum
+	return strconv.Itoa(sum)
 }
 
-func partTwo(lines []string) int {
+func (d *day3) PartTwo(lines []string) string {
 	starsAndAdjacentNumbers := map[coord][]string{}
 	for i := 0; i < len(lines); i++ {
 		for j := 0; j < len(lines[i]); j++ {
@@ -57,7 +55,7 @@ func partTwo(lines []string) int {
 
 			for _, star := range adjacentStars {
 				starsAndAdjacentNumbers[star] = append(starsAndAdjacentNumbers[star], num)
-			}	
+			}
 
 			j += len(num)
 		}
@@ -73,7 +71,7 @@ func partTwo(lines []string) int {
 		}
 	}
 
-	return sum
+	return strconv.Itoa(sum)
 }
 
 func parseNum(s string) string {

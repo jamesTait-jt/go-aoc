@@ -1,19 +1,18 @@
-package five
+package main
 
 import (
-	"fmt"
 	"math"
+	"strconv"
 	"strings"
 
 	"github.com/jamesTait-jt/go-aoc/internal/parse"
 )
 
-func Run(lines []string) {
-	fmt.Println("Part 1: ", partOne(lines))
-	fmt.Println("Part 2: ", partTwo(lines))
-}
+var Day5 day5
 
-func partOne(lines []string) int {
+type day5 struct{}
+
+func (d *day5) PartOne(lines []string) string {
 	seeds := parse.Nums(strings.Split(lines[0], ": ")[1], " ")
 
 	almanac := parseAlmanac(lines[1:])
@@ -27,10 +26,10 @@ func partOne(lines []string) int {
 		}
 	}
 
-	return lowestLocation
+	return strconv.Itoa(lowestLocation)
 }
 
-func partTwo(lines []string) int {
+func (d *day5) PartTwo(lines []string) string {
 	seedInput := parse.Nums(strings.Split(lines[0], ": ")[1], " ")
 	seedRanges := [][]int{}
 	i := 0
@@ -46,12 +45,12 @@ func partTwo(lines []string) int {
 		seed := almanac.LocationToSeed(i)
 		for _, seedRange := range seedRanges {
 			if seedRange[0] <= seed && seed < seedRange[0]+seedRange[1] {
-				return i
+				return strconv.Itoa(i)
 			}
 		}
 	}
 
-	return 0
+	return "0"
 }
 
 func parseAlmanac(lines []string) Almanac {
