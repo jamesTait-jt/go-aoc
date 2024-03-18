@@ -24,4 +24,4 @@ go.work
 .cookie
 
 # The downloaded aoc input
-**/.input/*
+**/*.aocin

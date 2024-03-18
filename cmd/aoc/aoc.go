@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 
@@ -11,55 +10,60 @@ import (
 	"github.com/jamesTait-jt/go-aoc/internal/2023/six"
 	"github.com/jamesTait-jt/go-aoc/internal/2023/three"
 	"github.com/jamesTait-jt/go-aoc/internal/2023/two"
+	"github.com/jamesTait-jt/go-aoc/internal/config"
 	"github.com/jamesTait-jt/go-aoc/internal/input"
 )
 
 func main() {
-	year := flag.Int("year", -1, "the year you would like to run")
-	day := flag.Int("day", -1, "the day you would like to run")
-	flag.Parse()
-
-	funcs := registerFuncs()
-
-	if *year == -1 {
-		log.Fatal("must specify a year with -year")
-	}
-
-	if *day == -1 {
-		runAllDays(*year, funcs[*year], false)
-	} else {
-		runSingleDay(*year, *day, false, funcs[*year][*day - 1])
-	}
-}
-
-func registerFuncs() map[int][]func([]string) {
-	return map[int][]func([]string){
-		2023: {
-			one.Run,
-			two.Run,
-			three.Run,
-			four.Run,
-			five.Run,
-			six.Run,
-		},
-	}
-}
-
-func runAllDays(year int, daysToRun []func([]string), force bool) {
-	for dayIdx, runner := range daysToRun {
-		dayToRun := dayIdx + 1
-		runSingleDay(year, dayToRun, force, runner)
-	}
-}
-
-func runSingleDay(year int, day int, force bool, runner func([]string)) {
-	input.Download(year, day, force)
-
-	input, err := input.Read(year, day)
+	appConfig, err := config.Init()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("~~~ Year=%d Day=%d\n", year, day)
-	runner(input)
+	runners := registerRunners()
+
+	if err = input.Download(appConfig); err != nil {
+		log.Fatal(err)
+	}
+
+	if err = run(appConfig, runners); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func registerRunners() map[int]map[int]func([]string) {
+	return map[int]map[int]func([]string){
+		2023: {
+			1: one.Run,
+			2: two.Run,
+			3: three.Run,
+			4: four.Run,
+			5: five.Run,
+			6: six.Run,
+		},
+	}
+}
+
+func run(appConfig config.AppConfig, runners map[int]map[int]func([]string)) error {
+	for _, dayToRun := range appConfig.Days {
+		yearRunners, ok := runners[appConfig.Year]
+		if !ok {
+			return fmt.Errorf("no runners found for year=%d - please ensure you have registered the runner with the Run() function for the given day", appConfig.Year)
+		}
+
+		runner, ok := yearRunners[dayToRun]
+		if !ok {
+			return fmt.Errorf("no runner found for year=%d day=%d - please ensure you have registered the runner with the Run() function for the given day", appConfig.Year, dayToRun)
+		}
+
+		input, err := input.Read(appConfig.Year, dayToRun, appConfig.Input)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("~~~ year=%d day=%d\n", appConfig.Year, dayToRun)
+		runner(input)
+	}
+
+	return nil
 }

@@ -1,3 +1,4 @@
+// Package input provides functionality to download and read input data for Advent of Code challenges.
 package input
 
 import (
@@ -11,21 +12,42 @@ import (
 	"github.com/jamesTait-jt/go-aoc/internal/parse"
 )
 
-const INPUT_DIR_FMT = "%s/internal/%d/.input/real"
-const inputFileFormatString = "%s/internal/%d/.input/real/%d.txt"
+// fileExtension is used in .gitignore to prevent comitting test data
+const fileExtension = "aocin"
 
-func Download(year, day int, forceDownload bool) error {
-	// If the file already exists, we don't need to download it again
-	inputFilePath := fmt.Sprintf(inputFileFormatString, config.ROOT_DIR, year, day)
-	_, err := os.Stat(inputFilePath)
-	if err == nil && !forceDownload {
-		fmt.Printf("the input for year=%d day=%d already exists. use -force if you want to overwrite it\n", year, day)
+// inputURLfmt id the location of the test input with year and day as string formatting arguments
+const inputURLfmt = "https://adventofcode.com/%d/day/%d/input"
 
-		return nil
+// Download downloads the input data for specified year and days from the Advent of Code website.
+// It saves the downloaded inputs to files in the specified input directory.
+// If a file already exists for a year and day, and ForceDownload is not set to true in the AppConfig,
+// it does not download the input again.
+func Download(appConfig config.AppConfig) error {
+	for _, day := range appConfig.Days {
+		inputFilePath := fmt.Sprintf("%s/%d/%d.%s", appConfig.Input, appConfig.Year, day, fileExtension)
+
+		if fileExists(inputFilePath) && !appConfig.ForceDownload {
+			fmt.Printf("the input for year=%d day=%d already exists (-force to overwrite)\n", appConfig.Year, day)
+
+			continue
+		}
+
+		url := fmt.Sprintf(inputURLfmt, appConfig.Year, day)
+		if err := downloadDay(appConfig, url, inputFilePath); err != nil {
+			return err
+		}
 	}
 
-	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", year, day)
-	req, err := prepareRequest(url)
+	return nil
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
+func downloadDay(appConfig config.AppConfig, url, path string) error {
+	req, err := prepareRequest(url, appConfig.SessionCookie)
 	if err != nil {
 		return err
 	}
@@ -36,7 +58,7 @@ func Download(year, day int, forceDownload bool) error {
 		return err
 	}
 
-	err = writeToFile(resp.Body, inputFilePath)
+	err = writeToFile(resp.Body, path)
 	if err != nil {
 		return err
 	}
@@ -44,18 +66,7 @@ func Download(year, day int, forceDownload bool) error {
 	return nil
 }
 
-func Read(year, day int) ([]string, error) {
-	inputDir := fmt.Sprintf(INPUT_DIR_FMT, config.ROOT_DIR, year)
-	inputFileName := fmt.Sprintf("%d.txt", day)
-	input, err := parse.Lines(os.DirFS(inputDir), inputFileName)
-	if err != nil {
-		return []string{}, err
-	}
-
-	return input, nil
-}
-
-func prepareRequest(url string) (*http.Request, error) {
+func prepareRequest(url, sessionCookie string) (*http.Request, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -63,14 +74,9 @@ func prepareRequest(url string) (*http.Request, error) {
 
 	req.Header.Set("User-Agent", "github.com/jamesTait-jt/go-aoc")
 
-	sessionCookieVal, err := config.GetSessionCookie()
-	if err != nil {
-		return nil, err
-	}
-
 	cookie := &http.Cookie{
 		Name:  "session",
-		Value: sessionCookieVal,
+		Value: sessionCookie,
 	}
 	req.AddCookie(cookie)
 
@@ -96,4 +102,16 @@ func writeToFile(content io.ReadCloser, pathToWrite string) error {
 	}
 
 	return nil
+}
+
+// Read reads input data from a file corresponding to the given year and day.
+// It returns a slice of strings, where each string represents a line in the input file.
+func Read(year, day int, inputDir string) ([]string, error) {
+	inputPath := fmt.Sprintf("%d/%d.%s", year, day, fileExtension)
+	input, err := parse.Lines(os.DirFS(inputDir), inputPath)
+	if err != nil {
+		return []string{}, err
+	}
+
+	return input, nil
 }
