@@ -25,6 +25,6 @@ func (i *IntSliceValue) Set(value string) error {
 
 		*i = append(*i, num)
 	}
-	
+
 	return nil
 }

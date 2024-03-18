@@ -37,7 +37,6 @@ func GetLinesTestdata_GivenValidFile() []LinesTestdata_GivenValidFile {
 			InputPath: "files/file.txt",
 			WantLines: []string{"Line1", "Line2", "Line3"},
 		},
-
 	}
 }
 

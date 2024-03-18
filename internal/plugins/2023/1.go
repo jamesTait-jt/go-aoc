@@ -13,8 +13,8 @@ type day1 struct{}
 
 func (d *day1) PartOne(lines []string) string {
 	currTotal := 0
-	for i := 0 ; i < len(lines) ; i++ {
-		digits := []rune{} 
+	for i := 0; i < len(lines); i++ {
+		digits := []rune{}
 		for _, char := range lines[i] {
 			if !unicode.IsDigit(char) {
 				continue
@@ -33,7 +33,7 @@ func (d *day1) PartOne(lines []string) string {
 
 func (d *day1) PartTwo(lines []string) string {
 	currTotal := 0
-	for i := 0 ; i < len(lines) ; i++ {
+	for i := 0; i < len(lines); i++ {
 		digits := []rune{}
 		currRune := 0
 		for currRune < len(lines[i]) {

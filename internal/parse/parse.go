@@ -19,13 +19,13 @@ func Lines(fsys fs.FS, path string) ([]string, error) {
 
 	lines := []string{}
 	scanner := bufio.NewScanner(f)
-    for scanner.Scan() {
+	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
-    }
+	}
 
-    if err := scanner.Err(); err != nil {
+	if err := scanner.Err(); err != nil {
 		return []string{}, fmt.Errorf("error scanning lines (did you pass a directory?): %w", err)
-    }
+	}
 
 	return lines, nil
 }
@@ -39,7 +39,7 @@ func Nums(s string, delimiter string) []int {
 		if str == "" {
 			continue
 		}
-		
+
 		n, _ := strconv.Atoi(str)
 		ns = append(ns, n)
 	}
