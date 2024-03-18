@@ -1,18 +1,17 @@
-package one
+package main
 
 import (
 	"fmt"
 	"strconv"
-	"unicode"
 	"strings"
+	"unicode"
 )
 
-func Run(lines []string) {
-	fmt.Println("Part 1: ", partOne(lines))
-	fmt.Println("Part 2: ", partTwo(lines))
-}
+var Day1 day1
 
-func partOne(lines []string) int {
+type day1 struct{}
+
+func (d *day1) PartOne(lines []string) string {
 	currTotal := 0
 	for i := 0 ; i < len(lines) ; i++ {
 		digits := []rune{} 
@@ -29,10 +28,10 @@ func partOne(lines []string) int {
 		currTotal += num
 	}
 
-	return currTotal
+	return strconv.Itoa(currTotal)
 }
 
-func partTwo(lines []string) int {
+func (d *day1) PartTwo(lines []string) string {
 	currTotal := 0
 	for i := 0 ; i < len(lines) ; i++ {
 		digits := []rune{}
@@ -53,7 +52,7 @@ func partTwo(lines []string) int {
 		currTotal += num
 	}
 
-	return currTotal
+	return strconv.Itoa(currTotal)
 }
 
 func parseDigit(s string) (rune, bool) {

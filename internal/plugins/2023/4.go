@@ -1,17 +1,15 @@
-package four
+package main
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
 
-func Run(lines []string) {
-	fmt.Println("Part 1: ", partOne(lines))
-	fmt.Println("Part 2: ", partTwo(lines))
-}
+var Day4 day4
 
-func partOne(lines []string) int {
+type day4 struct{}
+
+func (d *day4) PartOne(lines []string) string {
 	total := 0
 	for _, line := range lines {
 		input := strings.Split(line, ": ")[1]
@@ -30,7 +28,7 @@ func partOne(lines []string) int {
 			if !ok {
 				continue
 			}
-			
+
 			if points == 0 {
 				points = 1
 			} else {
@@ -40,18 +38,18 @@ func partOne(lines []string) int {
 		total += points
 	}
 
-	return total
+	return strconv.Itoa(total)
 }
 
-func partTwo(lines []string) int {
+func (d *day4) PartTwo(lines []string) string {
 	scratchcards := map[int]int{}
 	for idx, line := range lines {
-		cardNumber := idx+1
+		cardNumber := idx + 1
 
 		// Add the initial copy of the scratch card
 		if _, ok := scratchcards[cardNumber]; !ok {
 			scratchcards[cardNumber] = 1
-		}else {
+		} else {
 			scratchcards[cardNumber] = scratchcards[cardNumber] + 1
 		}
 
@@ -71,11 +69,11 @@ func partTwo(lines []string) int {
 			if !ok {
 				continue
 			}
-			
-			matches += 1	
+
+			matches += 1
 		}
 
-		for i := cardNumber + 1 ; i < cardNumber + 1 + matches ; i++ {
+		for i := cardNumber + 1; i < cardNumber+1+matches; i++ {
 			if _, ok := scratchcards[cardNumber]; !ok {
 				scratchcards[cardNumber] = 1
 			} else {
@@ -89,7 +87,7 @@ func partTwo(lines []string) int {
 		sum += copies
 	}
 
-	return sum
+	return strconv.Itoa(sum)
 }
 
 func getWinningNumbers(card string) map[int]struct{} {
@@ -107,4 +105,3 @@ func getWinningNumbers(card string) map[int]struct{} {
 
 	return winningNumbers
 }
-

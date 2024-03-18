@@ -1,17 +1,15 @@
-package two
+package main
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
 
-func Run(lines []string) {
-	fmt.Println("Part 1: ", partOne(lines))
-	fmt.Println("Part 2: ", partTwo(lines))
-}
+var Day2 day2
 
-func partOne(lines []string) int {
+type day2 struct{}
+
+func (d *day2) PartOne(lines []string) string {
 	sum := 0
 	for idx, game := range lines {
 		game = strings.Split(game, ": ")[1]
@@ -20,10 +18,10 @@ func partOne(lines []string) int {
 		}
 	}
 
-	return sum
+	return strconv.Itoa(sum)
 }
 
-func partTwo(lines []string) int {
+func (d *day2) PartTwo(lines []string) string {
 	sum := 0
 	for _, game := range lines {
 		game = strings.Split(game, ": ")[1]
@@ -32,7 +30,7 @@ func partTwo(lines []string) int {
 		sum += power
 	}
 
-	return sum
+	return strconv.Itoa(sum)
 }
 
 func validGame(game string) bool {

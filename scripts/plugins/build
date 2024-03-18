@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for filename in ./internal/plugins/**/*.go; do
+    go build -buildmode=plugin -o "${filename%.*}".so "$filename"
+done

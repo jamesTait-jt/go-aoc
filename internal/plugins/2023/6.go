@@ -1,19 +1,17 @@
-package six
+package main
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/jamesTait-jt/go-aoc/internal/parse"
 )
 
-func Run(lines []string) {
-	fmt.Println("Part 1: ", partOne(lines))
-	fmt.Println("Part 2: ", partTwo(lines))
-}
+var Day6 day6
 
-func partOne(lines []string) int {
+type day6 struct{}
+
+func (d *day6) PartOne(lines []string) string {
 	times := parse.Nums(strings.Split(lines[0], ":")[1], " ")
 	dists := parse.Nums(strings.Split(lines[1], ":")[1], " ")
 
@@ -29,10 +27,10 @@ func partOne(lines []string) int {
 		mult *= waysToWin
 	}
 
-	return mult
+	return strconv.Itoa(mult)
 }
 
-func partTwo(lines []string) int {
+func (d *day6) PartTwo(lines []string) string {
 	timeWithWhiteSpace := strings.Split(lines[0], ":")[1]
 	timeStr := strings.Join(strings.Fields(timeWithWhiteSpace), "")
 	time, _ := strconv.Atoi(timeStr)
@@ -49,5 +47,5 @@ func partTwo(lines []string) int {
 		}
 	}
 
-	return waysToWin
+	return strconv.Itoa(waysToWin)
 }
